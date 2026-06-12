@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coração 3D - Fontes e Idiomas Dinâmicos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Comfortaa:wght@700&family=Dancing+Script:wght@700&family=Pacifico&family=Playball&family=Fredoka:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        /* --- TEXTOS FIXOS NAS LATERAIS --- */
+        .side-text {
+            position: absolute;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ea80b0;
+            text-shadow: 0 0 10px #ffb3d1, 0 0 20px #ea80b0;
+            z-index: 10;
+            user-select: none;
+            letter-spacing: 1px;
+            /* Transição suave para troca de fonte e opacidade */
+            transition: font-family 0.4s ease-in-out, opacity 0.3s ease-in-out; 
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .side-text.left { left: 4%; }
+        .side-text.right { right: 4%; }
+
+        /* --- CONTAINER DO CORAÇÃO --- */
+        .heart-viewport {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            animation: rotateHeart 12s linear infinite; 
+        }
+
+        /* Palavras que moldam o coração */
+        .love-word {
+            position: absolute;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ea80b0;
+            text-shadow: 0 0 8px #ffb3d1, 0 0 15px #ea80b0;
+            white-space: nowrap;
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+        }
+
+        /* --- ANIMAÇÃO DE ROTAÇÃO NO ESPAÇO --- */
+        @keyframes rotateHeart {
+            0% { transform: rotateX(-10deg) rotateY(0deg); }
+            100% { transform: rotateX(-10deg) rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="side-text left" id="textLeft">EU AMO VOCÊ</div>
+    <div class="side-text right" id="textRight">EU AMO VOCÊ</div>
+
+    <div class="heart-viewport" id="heart"></div>
+
+    <script>
+        // --- SCRIPT DO CORAÇÃO 3D ---
+        const heartContainer = document.getElementById('heart');
+        const totalWords = 220; 
+
+        for (let i = 0; i < totalWords; i++) {
+            const phi = Math.acos(-1 + (2 * i) / totalWords);
+            const theta = Math.sqrt(totalWords * Math.PI) * phi;
+
+            const sinPhi = Math.sin(phi);
+            const cosPhi = Math.cos(phi);
+            const sinTheta = Math.sin(theta);
+            const cosTheta = Math.cos(theta);
+
+            let x = sinPhi * sinTheta;
+            let z = sinPhi * cosTheta;
+            let y = cosPhi;
+
+            x = x * 1.3;
+            y = y - Math.abs(x) * 0.5; 
+            y = y * 1.2;
+
+            const scale = 140; 
+            const posX = x * scale;
+            const posY = y * scale; 
+            const posZ = z * scale;
+
+            const word = document.createElement('div');
+            word.classList.add('love-word');
+            word.innerText = "i love you";
+
+            const rotY = theta * (180 / Math.PI);
+            word.style.transform = `translate3d(${posX}px, ${posY}px, ${posZ}px) rotateY(${rotY}deg)`;
+
+            heartContainer.appendChild(word);
+        }
+
+        // --- SCRIPT PARA ALTERNAR FONTES E IDIOMAS ---
+        const dataset = [
+            { text: "EU AMO VOCÊ", font: "'Pacifico', cursive" },
+            { text: "I LOVE YOU", font: "'Fredoka', sans-serif" },
+            { text: "JE T'AIME", font: "'Dancing Script', cursive" },
+            { text: "TE AMO", font: "'Caveat', cursive" },
+            { text: "TI AMO", font: "'Playball', cursive" },
+            { text: "ICH LIEBE DICH", font: "'Comfortaa', sans-serif" }
+        ];
+
+        const textLeft = document.getElementById('textLeft');
+        const textRight = document.getElementById('textRight');
+        let currentIndex = 0;
+
+        function changeTextAndFont() {
+            // Efeito sutil de piscar ao mudar
+            textLeft.style.opacity = 0.3;
+            textRight.style.opacity = 0.3;
+
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % dataset.length;
+                const currentData = dataset[currentIndex];
+
+                // Atualiza o texto e a fonte ao mesmo tempo
+                textLeft.innerText = currentData.text;
+                textLeft.style.fontFamily = currentData.font;
+
+                textRight.innerText = currentData.text;
+                textRight.style.fontFamily = currentData.font;
+
+                // Restaura a opacidade
+                textLeft.style.opacity = 1;
+                textRight.style.opacity = 1;
+            }, 300);
+        }
+
+        // Altera o idioma e a fonte a cada 1.5 segundos
+        setInterval(changeTextAndFont, 1500);
+    </script>
+
+</body>
+</html>
